@@ -2,7 +2,7 @@ import math
 import random
 import copy
 import time
-
+import numpy as np
 # isValid(puzzle matrix m; aTry form of x, y, value)
 # matrix in square where (x to the right, y down direction of vector)
 # assume 0 based counting for matrix
@@ -22,6 +22,16 @@ def isValid(m, aTry):
             return -2, "duplicate", aTry, i
         if val == m[i][yTry]: # search along x axis of matrix for row specified by aTry[1]
             return -3, "duplicate", aTry, i
+    # check entry is not duplicated within the 9 cell square
+    xcell = (xTry / 3) * 3
+    ycell = (yTry / 3) * 3
+    for ii in range(0, 2):
+        for jj in range(0, 2):
+            #print "debug", xcell+ii, ycell+jj, xTry, ii, yTry, jj
+            if val == m[xcell+ii][ycell+jj] :
+                return -4, "duplicate in cell", aTry, ii, jj
+
+
     return 1 # must be valid
 
 # feeble attempt 1
@@ -170,6 +180,16 @@ p8 = [0,4,0,0,0,0,0,0,7]
 p9 = [0,0,7,0,0,0,3,0,0]
 pe = [p1,p2,p3,p4,p5,p6,p7,p8,p9]
 
+p1 = [8,0,0,0,0,0,0,0,0]
+p2 = [0,0,7,5,0,0,0,0,9]
+p3 = [0,3,0,0,0,0,1,8,0]
+p4 = [0,6,0,0,0,1,0,5,0]
+p5 = [0,0,9,0,4,0,0,0,0]
+p6 = [0,0,0,7,5,0,0,0,0]
+p7 = [0,0,2,0,7,0,0,0,4]
+p8 = [0,0,0,0,0,3,6,1,0]
+p9 = [0,0,0,0,0,0,8,0,0]
+pf = [p1,p2,p3,p4,p5,p6,p7,p8,p9]
 start_time = time.time()
 
 def sodokusolver (p) :
@@ -183,14 +203,55 @@ def sodokusolver (p) :
         if 0 ==myGrade :
             print("solved (tries)?", i)
             print("time elapsed", time.time() - start_time, "grade", myGrade, puzzlecopy)
-            return
+            pizza = np.array(p)
+            print(pizza)
+            pizza = np.array(puzzlecopy)
+            print(pizza)
+
+            return i
         if myGrade < bestGrade  :
             bestGrade = min(myGrade, bestGrade)
+            bestSolution = copy.deepcopy(puzzlecopy)
             #print("time elapsed", time.time()-start_time,"grade", myGrade, puzzlecopy)
-    print("can't solve! myBestGrade is", bestGrade)
+    print("can't solve! myBestGrade is", bestGrade, bestSolution)
+    return -999
 
-sodokusolver(pa)
-sodokusolver(pb)
-sodokusolver(pc)
-sodokusolver(pd)
-sodokusolver(pe)
+#sodokusolver(pa)
+#sodokusolver(pb)
+#sodokusolver(pc)
+#sodokusolver(pd)
+#sodokusolver(pf)
+
+# returns a valid sodoku puzzle of random number of entries from 1 to 80
+def sodokurandom(initpuzzle) :
+    m = copy.deepcopy(initpuzzle)
+    #entrytarget = random.randint(30, 50)
+    #print entrytarget
+    for i in range (40) :
+        x = random.randint(0,8)
+        y = random.randint(0,8)
+        z = random.randint(1,9)
+        #print x,y,z
+        if 1 == isValid(m, [x,y,z]):
+            m[x][y] = z
+    return (m)
+
+
+
+
+jmax = 0
+jmaxproblem = copy.deepcopy(pc)
+for i in range (40) :
+    pz = sodokurandom(pc)
+    j = sodokusolver(pz)
+    if jmax < j :
+        jmax = j
+        jmaxproblem = copy.deepcopy(pz)
+
+print("most difficult problem", jmax, jmaxproblem)
+
+
+
+
+
+
