@@ -102,6 +102,10 @@ def solve(m, depth) :
     #print "solve function called", r, x, y
     if 0 == r :
         return "solved!", m
+    # create list of superficially valid entries;randomize and then pick from this list to speed up the search routine
+    for i in range(9) :
+        if isValid(m,[x,y,i]):
+            list.append(i)
 
     for i in range(40): # warning,
         rv = random.randint(1,9)
@@ -192,13 +196,11 @@ p7 = [0,0,2,0,7,0,0,0,4]
 p8 = [0,0,0,0,0,3,6,1,0]
 p9 = [0,0,0,0,0,0,8,0,0]
 pf = [p1,p2,p3,p4,p5,p6,p7,p8,p9]
-start_time = time.time()
+
 
 def sodokusolver (p) :
+    start_time = time.time()
     print ("New puzzle, non-zero count",np.count_nonzero(p))
-    pizza = np.array(p)
-    print(pizza)
-
     bestGrade = 81
     random.seed(time.time())
     attempts = 8000
@@ -210,7 +212,10 @@ def sodokusolver (p) :
         puzzlecopy = solve(puzzlecopy, 0)
         myGrade = grade(puzzlecopy)
         if 0 ==myGrade :
-            print("solved (tries)", i, "time elapsed", time.time() - start_time, "grade", myGrade, "nonzeros",np.count_nonzero(puzzlecopy))
+            print(" ") # carriage return
+            pizza = np.array(p)  # show problem
+            print(pizza)
+            print("solved (tries)", i, "time elapsed %5d" % (time.time() - start_time), "grade", myGrade, "nonzeros",np.count_nonzero(puzzlecopy))
             pizza = np.array(puzzlecopy)
             print(pizza)
             return i
@@ -218,24 +223,24 @@ def sodokusolver (p) :
             bestGrade = min(myGrade, bestGrade)
             bestSolution = copy.deepcopy(puzzlecopy)
             #print("time elapsed", time.time()-start_time,"grade", myGrade, puzzlecopy)
-    print("Can't solve attempts", attempts, "myBestGrade", bestGrade)
-    pizza = np.array(bestSolution)
-    print(pizza)
+    #print("Can't solve attempts", attempts, "myBestGrade", bestGrade)
+    #pizza = np.array(bestSolution)
+    #print(pizza)
     return -999
 
-sodokusolver(pa)
-sodokusolver(pb)
-sodokusolver(pc)
-sodokusolver(pd)
-sodokusolver(pe)
-sodokusolver(pf)
+#sodokusolver(pa)
+#sodokusolver(pb)
+#sodokusolver(pc)
+#sodokusolver(pd)
+#sodokusolver(pe)
+#sodokusolver(pf)
 
 # returns a valid sodoku puzzle of random number of entries from 1 to 80
 def sodokurandom(initpuzzle) :
     m = copy.deepcopy(initpuzzle)
     #entrytarget = random.randint(40)
     #print entrytarget
-    for i in range (40,60) :
+    for i in range (30) :
         x = random.randint(0,8)
         y = random.randint(0,8)
         z = random.randint(1,9)
@@ -246,7 +251,7 @@ def sodokurandom(initpuzzle) :
 
 jmax = 0
 jmaxproblem = copy.deepcopy(pc)
-for i in range (40) :
+for i in range (80) :
     pz = sodokurandom(pc)
     j = sodokusolver(pz)
     if jmax < j :
